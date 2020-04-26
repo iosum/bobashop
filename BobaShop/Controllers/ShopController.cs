@@ -114,5 +114,18 @@ namespace BobaShop.Controllers
             // 3. load a view and pass the cart items to it for display
             return View(cartItems);
         }
+
+        public IActionResult RemoveFromCart(int id)
+        {
+            var cartItem = _context.Cart.SingleOrDefault(c => c.CartId == id);
+
+            // delete the item
+            _context.Cart.Remove(cartItem);
+            _context.SaveChanges();
+
+            // redirect to the cart page
+            return RedirectToAction("Cart");
+
+        }
     }
 }
