@@ -17,14 +17,17 @@ namespace BobaShop.Models
         [Key]
         [Column("product_id")]
         public int ProductId { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Product name is required.")]
         [Column("name")]
         [StringLength(100)]
+        [Display(Name = "Drink Name")]
         public string Name { get; set; }
         [Column("description")]
         [StringLength(8000)]
         public string Description { get; set; }
         [Column("price", TypeName = "decimal(10, 2)")]
+        [Range(0, 999999, ErrorMessage = "Price must be between 0 and 999,999")]
+        [DisplayFormat(DataFormatString = "{0:c}")]
         public decimal Price { get; set; }
         [Column("photo")]
         [StringLength(255)]
