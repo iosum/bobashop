@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BobaShop.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BobaShop.Controllers
 {
+    [Authorize(Roles ="Administrator")]
     public class CategoriesController : Controller
     {
         private readonly BobaShopContext _context;
@@ -18,6 +20,7 @@ namespace BobaShop.Controllers
             _context = context;
         }
 
+        [AllowAnonymous]
         // GET: Categories
         public async Task<IActionResult> Index()
         {
