@@ -27,9 +27,11 @@ namespace BobaShop.Models
         [Required]
         [Column("first_name")]
         [StringLength(100)]
+        [Display (Name = "First Name")]
         public string FirstName { get; set; }
         [Required]
         [Column("last_name")]
+        [Display(Name = "Last Name")]
         [StringLength(100)]
         public string LastName { get; set; }
         [Required]
@@ -47,6 +49,7 @@ namespace BobaShop.Models
         [Required]
         [Column("postal_code")]
         [StringLength(10)]
+        [Display (Name = "Postal Code")]
         public string PostalCode { get; set; }
         [Required]
         [Column("phone")]

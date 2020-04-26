@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using BobaShop.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace BobaShop.Controllers
 {
@@ -60,16 +63,32 @@ namespace BobaShop.Controllers
             // get the username
             var cartUsername = GetCartUsername();
 
-            // create a fake cart
-            var cart = new Cart
-            {
-                ProductId = ProductId,
-                Quantity = Quantity,
-                Price = price,
-                Username = cartUsername
-            };
+            // check if this user has this product already in cart.  If so, update quantity
+            var cartItem = _context.Cart.FirstOrDefault(c => c.ProductId == ProductId
+                && c.Username == cartUsername);
 
-            _context.Cart.Add(cart);
+            // if the product is not in the cart
+            if(cartItem == null)
+            {
+                // add the product to the cart
+                var cart = new Cart
+                {
+                    ProductId = ProductId,
+                    Quantity = Quantity,
+                    Price = price,
+                    Username = cartUsername
+                };   
+
+                _context.Cart.Add(cart);
+            }
+            else
+            {
+                cartItem.Quantity += Quantity; // add the new quantity to the existing quantity
+                _context.Update(cartItem);
+            }
+
+
+
             _context.SaveChanges();
 
             // show the cart page
@@ -127,5 +146,74 @@ namespace BobaShop.Controllers
             return RedirectToAction("Cart");
 
         }
+
+        // if not logging in, redirect to the login view
+        [Authorize]
+        public IActionResult Checkout()
+        {
+            // check if the user is logged in
+            MigrateCart();
+            // if yes, go to the Checkout.cshtml to let the user fill out the form 
+            return View();
+        }
+
+        // after the user filling out the form, it will hit this method
+        // [Bind("FirstName,LastName,Address,City,Province,PostalCode,Phone")] Order order : get the inputs from the form
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Checkout([Bind("FirstName,LastName,Address,City,Province,PostalCode,Phone")] Order order)
+        {
+            // auto-fill the date, user, and total properties rather than let the user enter these values
+            order.OrderDate = DateTime.Now;
+            order.UserId = User.Identity.Name;
+            var cartItems = _context.Cart.Where(c => c.Username == User.Identity.Name);
+            decimal cartTotal = (from c in cartItems
+                                 select c.Quantity * c.Price).Sum();
+            order.Total = cartTotal;
+
+            // store the order in object with the external extension
+            HttpContext.Session.SetObject("Order", order);
+
+            return RedirectToAction("Payment");
+        }
+
+
+        private void MigrateCart()
+        {
+            // if the user shopping anonomyously
+            if(HttpContext.Session.GetString("CartUsername") != User.Identity.Name)
+            {
+                // get the guid from the session
+                var cartUsername = HttpContext.Session.GetString("CartUsername");
+               
+
+                // get the anon's cart item
+                var cartItems = _context.Cart.Where(c => c.Username == cartUsername);
+
+                // get all items and update the username
+                foreach(var item in cartItems)
+                {
+                    // item.Username : guid from the cart db
+                    // User.Identity.Name : the name after login in
+                    // update the username from the guid to the user's email
+                    item.Username = User.Identity.Name;
+                    _context.Update(item);
+                }
+
+                // save
+                _context.SaveChanges();
+
+                // update the session variable from a GUID to the user's email
+                HttpContext.Session.SetString("CartUsername", User.Identity.Name);
+            }
+        }
+
+        public IActionResult Payment()
+        {
+            return View();
+        }
+        
+
     }
 }
