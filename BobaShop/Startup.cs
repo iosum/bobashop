@@ -31,8 +31,22 @@ namespace BobaShop
             services.AddDbContext<BobaShopContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<BobaShopContext>();
+
+
+            // configure Identity to work with our Database
+            // use Bootstrap to style the Identity views
+            // Use our new ApplicationRole class to manage roles and permissions
+            // point Identity to use the existing CtrlAltPc Db Context class
+            // use default cookie settings
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddDefaultUI()
+                .AddRoles<ApplicationRole>()
+                 .AddRoleManager<RoleManager<ApplicationRole>>()
+                 .AddEntityFrameworkStores<BobaShopContext>()
+                 .AddDefaultTokenProviders();
+
+            //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            //    .AddEntityFrameworkStores<BobaShopContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
         }

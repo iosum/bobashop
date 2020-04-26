@@ -1,10 +1,11 @@
 ﻿using System;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace BobaShop.Models
 {
-    public partial class BobaShopContext : DbContext
+    public partial class BobaShopContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
         public BobaShopContext()
         {
@@ -25,13 +26,13 @@ namespace BobaShop.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=BobaShop;Integrated Security=True;");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Cart>(entity =>
             {
                 entity.Property(e => e.Quantity).HasDefaultValueSql("((1))");
