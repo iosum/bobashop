@@ -1,0 +1,20 @@
+﻿@model IEnumerable<BobaShop.Models.Category>
+
+@{
+    ViewData["Title"] = "Shop Category";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Shop from Category</h1>
+
+
+<div class="row container">
+    
+    @foreach(var item in Model)
+    {
+    <div class="col-lg-6">
+        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 140x140"><title>Placeholder</title><rect width="100%" height="100%" fill="#777" /><text x="50%" y="50%" fill="#777" dy=".3em">140x140</text></svg>
+        <a asp-controller="Shop" asp-action="Browse" asp-route-category="@item.Name">@item.Name</a>
+    </div>
+    }
+</div><!-- /.row -->

@@ -44,6 +44,8 @@ namespace BobaShop
                  .AddRoleManager<RoleManager<ApplicationRole>>()
                  .AddEntityFrameworkStores<BobaShopContext>()
                  .AddDefaultTokenProviders();
+            // configure session
+            services.AddSession();
 
             //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
             //    .AddEntityFrameworkStores<BobaShopContext>();
@@ -72,6 +74,9 @@ namespace BobaShop
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            // configure session
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {
