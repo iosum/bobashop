@@ -8,7 +8,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Stripe;
 
 namespace BobaShop.Controllers
 {
@@ -17,11 +19,14 @@ namespace BobaShop.Controllers
         // add db connection
         private readonly BobaShopContext _context;
 
+        private IConfiguration _configuration;
+
         // constructor - method use to create an instance of this class
-        public ShopController(BobaShopContext _context)
+        public ShopController(BobaShopContext _context, IConfiguration _configuration)
         {
             // accept in an instance of our db connection class and use this object to connect
             this._context = _context;
+            this._configuration = _configuration;
         }
 
         // GET: /shop
@@ -162,7 +167,7 @@ namespace BobaShop.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Checkout([Bind("FirstName,LastName,Address,City,Province,PostalCode,Phone")] Order order)
+        public IActionResult Checkout([Bind("FirstName,LastName,Address,City,Province,PostalCode,Phone")] Models.Order order)
         {
             // auto-fill the date, user, and total properties rather than let the user enter these values
             order.OrderDate = DateTime.Now;
@@ -209,9 +214,90 @@ namespace BobaShop.Controllers
             }
         }
 
+        [Authorize]
         public IActionResult Payment()
         {
+            // set up the payment page to show the order
+
+            // get the order from the session variable and cast it to the order object
+            var order = HttpContext.Session.GetObject<Models.Order>("Order");
+
+            // use viewbag to display total and pass the amount to stripe
+            ViewBag.Total = order.Total;
+            // stripe was amount in cent, not dollars 
+            ViewBag.CentsTotal = order.Total * 100;
+            ViewBag.PublishableKey = _configuration.GetSection("Stripe")["PublishableKey"];
+
             return View();
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Payment(string stripeEmail, string stripeToken)
+        {
+            // send the payment to stripe
+            StripeConfiguration.ApiKey = _configuration.GetSection("Stripe")["SecretKey"];
+            // get the username from the session
+            var cartUsername = HttpContext.Session.GetString("CartUsername");
+            var cartItems = _context.Cart.Where(c => c.Username == cartUsername);
+            // get the order from the session
+            var order = HttpContext.Session.GetObject<Models.Order>("Order");
+
+
+            //-----------Stripe Docs----------------------------
+            // generate and save a new order
+            var customerService = new CustomerService();
+            var chargeService = new ChargeService();
+
+            var customer = customerService.Create(new CustomerCreateOptions
+            {
+                Email = stripeEmail,
+                Source = stripeToken
+            });
+
+            // new charge using customer created above using Stripe API
+            var charge = chargeService.Create(new ChargeCreateOptions
+            {
+                Amount = Convert.ToInt32(order.Total * 100),
+                Description = "Boba Shop Purchase",
+                Currency = "twd",
+                Customer = customer.Id
+            });
+            
+
+            // generate and save a new order.  The new OrderId PK is populate automatically
+            _context.Order.Add(order);
+            _context.SaveChanges();
+            //-----------End Stripe Docs----------------------------
+            
+            
+            // populate the order details with the cart item
+            foreach(var item in cartItems)
+            {
+                var orderDetail = new OrderDetail
+                {
+                    OrderId = order.OrderId,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    Price = item.Price
+                };
+                // add all the items in the cart to the order detail
+                 _context.OrderDetail.Add(orderDetail);
+            }
+            // save it to the OrderDetail table
+            _context.SaveChanges();
+
+            // delete the cart item
+            foreach(var item in cartItems)
+            {
+                _context.Cart.Remove(item);
+            } 
+
+            _context.SaveChanges();
+
+            // confirmation / receipt for the new orderId
+            return RedirectToAction("Details", "Orders", new { id = order.OrderId});
         }
         
 

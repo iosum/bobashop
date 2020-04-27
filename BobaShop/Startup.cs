@@ -51,6 +51,9 @@ namespace BobaShop
             //    .AddEntityFrameworkStores<BobaShopContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            // make configuration values from appsettings.json available to the controllers
+            services.AddSingleton<IConfiguration>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
