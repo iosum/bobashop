@@ -22,12 +22,22 @@ namespace BobaShop.Controllers
 
         [AllowAnonymous]
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            // add order by to display products a-z: .OrderBy(p => p.Name)
-            var bobaShopContext = _context.Product.OrderBy(p => p.Name).Include(p => p.Category);
-            return View(await bobaShopContext.ToListAsync());
+            var products = from p in _context.Product
+                           select p;
+            if(!String.IsNullOrEmpty(searchString))
+            {
+                products = products.Where(p => p.Name.Contains(searchString));
+            }
+
+            return View(await products.ToListAsync());
+
+             // add order by to display products a-z: .OrderBy(p => p.Name)
+            //var bobaShopContext = _context.Product.OrderBy(p => p.Name).Include(p => p.Category);
+            //return View(await bobaShopContext.ToListAsync());
         }
+
 
         [AllowAnonymous]
         // GET: Products/Details/5
@@ -128,6 +138,7 @@ namespace BobaShop.Controllers
             ViewData["CategoryId"] = new SelectList(_context.Category, "CategoryId", "Name", product.CategoryId);
             return View(product);
         }
+
 
         // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)

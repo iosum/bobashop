@@ -139,6 +139,7 @@ namespace BobaShop.Controllers
             return View(cartItems);
         }
 
+
         public IActionResult RemoveFromCart(int id)
         {
             var cartItem = _context.Cart.SingleOrDefault(c => c.CartId == id);
