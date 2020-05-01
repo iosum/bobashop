@@ -1,22 +1,16 @@
-﻿using System;
+﻿using BobaShop.Models;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace BobaShop.Models
+namespace BobaShop.ViewModels
 {
-    [Table("product")]
-    public partial class Product
+    public class ProductCreateViewModel
     {
-        public Product()
-        {
-            Cart = new HashSet<Cart>();
-            OrderDetail = new HashSet<OrderDetail>();
-        }
-
-        [Key]
-        [Column("product_id")]
-        public int ProductId { get; set; }
         [Required]
         [Column("name")]
         [StringLength(100)]
@@ -29,7 +23,7 @@ namespace BobaShop.Models
         public decimal Price { get; set; }
         [Column("photo")]
         [StringLength(255)]
-        public string Photo { get; set; }
+        public IFormFile Photo { get; set; }
         [Column("category_id")]
         public int CategoryId { get; set; }
 
