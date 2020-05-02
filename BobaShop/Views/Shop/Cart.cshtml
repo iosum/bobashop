@@ -6,48 +6,78 @@
     decimal total = 0;
 }
 
-    <h1>Cart</h1>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Quantity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Product)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-    total += item.Quantity * item.Price;
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
+<section class="jumbotron text-center">
+    <div class="container">
+        <h1 class="jumbotron-heading">Cart</h1>
+    </div>
+</section>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col-12 col-md-8 col-lg-8">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="border-0 bg-light">
+                                    <div>
+                                        @Html.DisplayNameFor(model => model.Product)
 
-            <td>
-                @Html.DisplayFor(modelItem => item.Product.Name)
-            </td>
-            <td>
-                @String.Format("{0:c}", item.Price)
-            </td>
-            <td>
-                <a asp-action="RemoveFromCart" asp-route-id="@item.CartId" onclick="return ConfirmDelete();">Delete</a>
-            </td>
-        </tr>
-}   
-    <tr>
-        <td class="text-right">@String.Format("{0:c}", total)</td>
-        <td>
-            <a asp-controller="Shop" asp-action="Index"><< Keep Shopping</a>
-            <a asp-controller="Shop" asp-action="Checkout" class="btn btn-primary">Checkout</a>
-        </td>
-    </tr>
+                                    </div>
+                                </th>
+                                <th scope="col" class="border-0 bg-light">
+                                    <div>
+                                        @Html.DisplayNameFor(model => model.Quantity)
+                                    </div>
+                                </th>
+                                <th scope="col" class="border-0 bg-light">
+                                    <div>
+                                        @Html.DisplayNameFor(model => model.Price)
+                                    </div>
+                                </th>
+                                <th scope="col" class="border-0 bg-light">Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                total += item.Quantity * item.Price;
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Product.Name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Quantity)
+                                    </td>
+                                    <td>
+                                        @String.Format("{0:c}", item.Price)
+                                    </td>
+                                    <td class="align-middle">
+                                        <a asp-action="RemoveFromCart" asp-route-id="@item.CartId" onclick="return ConfirmDelete();"><i class="fa fa-trash"></i></a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-12 col-md-4 col-lg-4">
+                    <div class="bg-light rounded-pill px-4 py-3 text-uppercase font-weight-bold">Order summary </div>
+                    <div class="p-4">
+                        <ul class="list-unstyled mb-4">
+                            <li class="d-flex justify-content-between py-3 border-bottom">
+                                <strong class="text-muted">Total</strong>
+                                <h5 class="font-weight-bold">@String.Format("{0:c}", total)</h5>
+                            </li>
+                        </ul>
+                        <a asp-controller="Shop" asp-action="Index" class="btn btn-dark rounded-pill py-2 btn-block"><< Keep Shopping</a>
+                        <a asp-controller="Shop" asp-action="Checkout" class="btn btn-dark rounded-pill py-2 btn-block">Procceed to checkout</a>
+                    </div>
+                </div>
 
-    </tbody>
-</table>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
