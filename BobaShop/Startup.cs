@@ -52,6 +52,7 @@ namespace BobaShop
             services.AddControllersWithViews();
             services.AddRazorPages();
 
+            // add google login api
             services.AddAuthentication()
                  .AddGoogle(options =>
                  {
@@ -61,6 +62,13 @@ namespace BobaShop
                      options.ClientId = googleAuthNSection["ClientId"];
                      options.ClientSecret = googleAuthNSection["ClientSecret"];
                  });
+
+            // add facebook login api
+            services.AddAuthentication().AddFacebook(facebookOptions =>
+            {
+                facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
+                facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+            });
 
             // make configuration values from appsettings.json available to the controllers
             services.AddSingleton<IConfiguration>(Configuration);
