@@ -34,6 +34,18 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Shop" asp-action="Index">Shop</a>
                         </li>
                     </ul>
+                    <form asp-controller="Products" asp-action="Index" class="form-inline">
+                        <div class="input-group input-group-sm">
+                            <input class="form-control" type="text" name="SearchString" placeholder="Search Product Name...">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-secondary btn-number">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+
+                            @*<input type="submit" value="Search" class="btn btn-info" />*@
+                        </div>
+                    </form>
                 </div>
             </div>
         </nav>

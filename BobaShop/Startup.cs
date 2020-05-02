@@ -52,6 +52,16 @@ namespace BobaShop
             services.AddControllersWithViews();
             services.AddRazorPages();
 
+            services.AddAuthentication()
+                 .AddGoogle(options =>
+                 {
+                     IConfigurationSection googleAuthNSection =
+                         Configuration.GetSection("Authentication:Google");
+
+                     options.ClientId = googleAuthNSection["ClientId"];
+                     options.ClientSecret = googleAuthNSection["ClientSecret"];
+                 });
+
             // make configuration values from appsettings.json available to the controllers
             services.AddSingleton<IConfiguration>(Configuration);
         }
