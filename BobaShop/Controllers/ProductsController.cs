@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BobaShop.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace BobaShop.Controllers
 {
@@ -14,10 +17,13 @@ namespace BobaShop.Controllers
     public class ProductsController : Controller
     {
         private readonly BobaShopContext _context;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public ProductsController(BobaShopContext context)
+
+        public ProductsController(BobaShopContext context, IHostingEnvironment hostingEnvironment)
         {
             _context = context;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         [AllowAnonymous]
@@ -26,14 +32,14 @@ namespace BobaShop.Controllers
         {
             var products = _context.Product.OrderBy(p => p.Name).Include(p => p.Category);
 
-            if(!String.IsNullOrEmpty(searchString))
+            if (!String.IsNullOrEmpty(searchString))
             {
                 products = products.Where(p => p.Name.Contains(searchString)).Include(p => p.Category);
             }
 
             return View(await products.ToListAsync());
 
-             // add order by to display products a-z: .OrderBy(p => p.Name)
+            // add order by to display products a-z: .OrderBy(p => p.Name)
             //var bobaShopContext = _context.Product.OrderBy(p => p.Name).Include(p => p.Category);
             //return View(await bobaShopContext.ToListAsync());
         }
@@ -65,7 +71,7 @@ namespace BobaShop.Controllers
             // add .OrderBy clause to category query
             // c is a parameter that represents all of the category data from the query
             // => is a "lambda" or "fat-arrow" operator representing an anonymous function
-            ViewData["CategoryId"] = new SelectList(_context.Category.OrderBy(c=>c.Name), "CategoryId", "Name");
+            ViewData["CategoryId"] = new SelectList(_context.Category.OrderBy(c => c.Name), "CategoryId", "Name");
             return View();
         }
 
@@ -78,6 +84,24 @@ namespace BobaShop.Controllers
         {
             if (ModelState.IsValid)
             {
+                // get the image 
+                var files = HttpContext.Request.Form.Files;
+
+                if (files != null)
+                {
+                    string uploadFolder = Path.Combine(_hostingEnvironment.WebRootPath, @"img");
+                    // create an unique file name using guid and the file
+                    string uniqueFileName = Guid.NewGuid().ToString() + files[0].FileName;
+                    string filePath = Path.Combine(uploadFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await files[0].CopyToAsync(fileStream);
+                        product.Photo = uniqueFileName;
+                    }
+                }
+
+
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -117,8 +141,25 @@ namespace BobaShop.Controllers
 
             if (ModelState.IsValid)
             {
+
                 try
                 {
+                    // get the image 
+                    var files = HttpContext.Request.Form.Files;
+
+                    if (files != null)
+                    {
+                        string uploadFolder = Path.Combine(_hostingEnvironment.WebRootPath, @"img");
+                        // create an unique file name using guid and the file
+                        string uniqueFileName = Guid.NewGuid().ToString() + files[0].FileName;
+                        string filePath = Path.Combine(uploadFolder, uniqueFileName);
+
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await files[0].CopyToAsync(fileStream);
+                            product.Photo = uniqueFileName;
+                        }
+                    }
                     _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
