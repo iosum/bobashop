@@ -44,8 +44,6 @@ namespace BobaShop.Controllers
             return View(order);
         }
 
-
-
         private bool OrderExists(int id)
         {
             return _context.Order.Any(e => e.OrderId == id);

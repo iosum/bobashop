@@ -2,7 +2,38 @@
     ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+<div id="demo" class="carousel slide" data-ride="carousel">
+    <ul class="carousel-indicators">
+        <li data-target="#demo" data-slide-to="0" class="active"></li>
+        <li data-target="#demo" data-slide-to="1"></li>
+        <li data-target="#demo" data-slide-to="2"></li>
+    </ul>
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="https://cdn.pixabay.com/photo/2016/09/21/22/00/tee-1685847_1280.jpg" alt="Green Milk Tea" width="1100" height="500">
+            <div class="carousel-caption">
+                <h3>Green Milk Tea</h3>
+                <p>One of the best drink!</p>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <img src="https://cdn.pixabay.com/photo/2016/08/10/15/10/green-tea-1583546_1280.jpg" alt="Green Tea" width="1100" height="500">
+            <div class="carousel-caption">
+                <h3>Green Tea</h3>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <img src="https://cdn.pixabay.com/photo/2018/06/23/06/07/drink-3492107_1280.jpg" alt="Milk Tea" width="1100" height="500">
+            <div class="carousel-caption">
+                <h3>Milk Tea</h3>
+            </div>
+        </div>
+    </div>
+    <a class="carousel-control-prev" href="#demo" data-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </a>
+    <a class="carousel-control-next" href="#demo" data-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </a>
 </div>

@@ -47,6 +47,19 @@ namespace BobaShop.Controllers
             return View(products);
         }
 
+
+        public IActionResult SearchProduct(string searchString)
+        {
+            ViewBag.SearchProduct = searchString;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                var products = _context.Product.Where(p => p.Name.Contains(searchString)).Include(p => p.Category);
+                return View(products);
+            }
+            return View();
+        }
+
         public IActionResult ProductDetails(string product)
         {
 
@@ -93,7 +106,7 @@ namespace BobaShop.Controllers
             }
 
 
-
+            HttpContext.Session.SetObject("Cart Item", cartItem);
             _context.SaveChanges();
 
             // show the cart page

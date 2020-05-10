@@ -1,0 +1,43 @@
+﻿@model IEnumerable<BobaShop.Models.Product>
+
+@{
+    ViewData["Title"] = "Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<section class="jumbotron text-center">
+    <div class="container">
+        <h1 class="jumbotron-heading">Results for @ViewBag.SearchProduct</h1>
+    </div>
+</section>
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                @if (Model != null)
+                {
+                    @foreach (var item in Model)
+                    {
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="card m-2">
+                                <img class="card-img-top" src="~/img/@item.Photo" alt="Card image cap">
+                                <div class="card-body">
+                                    <h4 class="card-title"><a asp-controller="Shop" asp-action="ProductDetails" asp-route-product="@item.Name">@item.Name</a></h4>
+                                    <div class="row">
+                                        <div class="col">
+                                            <p class="btn btn-dark rounded-pill py-2 btn-block">@String.Format("{0:c}", item.Price)</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

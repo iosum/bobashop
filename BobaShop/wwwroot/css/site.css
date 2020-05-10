@@ -1,11 +1,18 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
-a.navbar-brand {
+@import 'https://fonts.googleapis.com/css?family=Montserrat|Open+Sans';
+
+.navbar-brand {
+    font-family: 'Montserrat', sans-serif;
+    text-transform: uppercase
+}
+
+/*a.navbar-brand {
   white-space: normal;
   text-align: center;
   word-break: break-all;
-}
+}*/
 
 /* Provide sufficient contrast against white background */
 a {
@@ -68,4 +75,30 @@ body {
   width: 100%;
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
+}
+.carousel-inner img {
+    width: 100%;
+    height: 100%;
+}
+
+#mastHeadContainer {
+    width: 100%;
+    height: 56px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 7px 16px;
+    box-sizing: border-box;
+    border-bottom: 1px solid #e8e8e8;
+    background-color: #fff;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+}
+
+.navbarContainer {
+    background-color: #fafafa;
+    width: 100%;
+    display: flex;
+    align-items: center;
 }
